@@ -16,7 +16,7 @@ show dbs
 
 // きれいに整形して表示(コレクション名は、作成したモデルの複数形小文字)
 db.コレクション名.find()
-例)db.products.find()
+例)db.campgrounds.find()
 
 // MongoDB サービスの停止
 brew services stop mongodb-community
