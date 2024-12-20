@@ -1,15 +1,69 @@
 <% layout('layouts/boilerplate') -%>
-<h1>キャンプ場の新規登録</h1>
-<form action="/campgrounds" method="post">
-  <div>
-    <label for="title">タイトル</label>
-    <input type="text" id="title" name="campground[title]" />
-  </div>
 
-  <div>
-    <label for="location">場所</label>
-    <input type="text" id="location" name="campground[location]" />
+<div class="row">
+  <h1 class="text-center">キャンプ場の新規登録</h1>
+  <div class="offset-3 col-6">
+    <form action="/campgrounds" method="post">
+      <div class="mb-3">
+        <label class="form-label" for="title">タイトル</label>
+        <input
+          class="form-control"
+          type="text"
+          id="title"
+          name="campground[title]"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="location">場所</label>
+        <input
+          class="form-control"
+          type="text"
+          id="location"
+          name="campground[location]"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="image">画像URL</label>
+        <input
+          class="form-control"
+          type="text"
+          id="image"
+          name="campground[image]"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="price">価格</label>
+        <div class="input-group">
+          <span class="input-group-text" id="price-label">￥</span>
+          <input
+            id="price"
+            type="text"
+            class="form-control"
+            placeholder="0"
+            aria-label="価格"
+            aria-describedby="price-label"
+            name="campground[price]"
+          />
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="description">説明</label>
+        <textarea
+          class="form-control"
+          type="text"
+          id="description"
+          name="campground[description]"
+        ></textarea>
+      </div>
+
+      <div class="mb-3">
+        <button class="btn btn-success">登録する</button>
+      </div>
+    </form>
+    <a href="/campgrounds">一覧に戻る</a>
   </div>
-  <button>登録する</button>
-</form>
-<a href="/campgrounds">一覧に戻る</a>
+</div>

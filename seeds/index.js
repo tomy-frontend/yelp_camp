@@ -24,9 +24,14 @@ const seedDB = async () => {
   await Campground.deleteMany({}); // 既存のデータを全消し
   for (let i = 0; i < 50; i++) {
     const randomCityIndex = Math.floor(Math.random() * cities.length);
+    const price = Math.floor(Math.random() * 2000) + 1000;
     const camp = new Campground({
       location: `${cities[randomCityIndex].prefecture}${cities[randomCityIndex].city}`,
       title: `${sample(descriptors)}・${sample(places)}`,
+      image: "https://picsum.photos/800",
+      description:
+        "これはダミーテキストです。この文章は仮のものです。文字数、文体、内容の確認のためにここに表示されています。これはダミーテキストです。この文章は仮のものです。文字数、文体、内容の確認のためにここに表示されています。",
+      price,
     });
     await camp.save();
   }
