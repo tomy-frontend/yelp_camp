@@ -6,6 +6,7 @@ const methodOverride = require("method-override");
 const Campground = require("./models/campground");
 const campground = require("./models/campground");
 const morgan = require("morgan"); // ログ記録Morgan
+const ejsMate = require("ejs-mate");
 
 // mongooseへの接続
 mongoose
@@ -21,6 +22,7 @@ mongoose
     console.log("MongoDB接続エラー!", error);
   });
 
+app.engine("ejs", ejsMate); // ejsMateの使用
 // app.useは全てのリクエストの中身で呼ばれる
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -48,13 +50,13 @@ app.use("/campgrounds/:id", (req, res, next) => {
 
 // 簡易パスワード認証ミドルウェア(!本番では絶対やっちゃだめ!)
 // 関数にすることで、特定のルーティングで使用することができる
-const verifyPassword = (req, res, next) => {
-  const { password } = req.query;
-  if (password === "supersecret") {
-    return next();
-  }
-  res.send("パスワードが必要です。");
-};
+// const verifyPassword = (req, res, next) => {
+//   const { password } = req.query;
+//   if (password === "supersecret") {
+//     return next();
+//   }
+//   res.send("パスワードが必要です。");
+// };
 
 // ホームディレクトリのルーティング
 app.get("/", (req, res) => {
@@ -111,9 +113,9 @@ app.delete("/campgrounds/:id", async (req, res) => {
 
 // 認証ページ
 // 第二引数に作成したミドルウェアを設定して、特定のルーティングにだけミドルウェアを設定することができる
-app.get("/secret", verifyPassword, (req, res) => {
-  res.send("ここは秘密のページ!!突破おめでとう！");
-});
+// app.get("/secret", verifyPassword, (req, res) => {
+//   res.send("ここは秘密のページ!!突破おめでとう！");
+// });
 
 // ルーティングの最後に上記どれにも一致しないルートは404ページとして返す。次はないからnext()も必要ない。
 // 記述する場所はルーティング記載の1番最後！！
