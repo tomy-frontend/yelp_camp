@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const Campground = require("./models/campground");
 const campground = require("./models/campground");
+const morgan = require("morgan"); // ログ記録Morgan
 
 // mongooseへの接続
 mongoose
@@ -20,10 +21,24 @@ mongoose
     console.log("MongoDB接続エラー!", error);
   });
 
+// app.useは全てのリクエストの中身で呼ばれる
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
+app.use(morgan("dev")); // Morganを全てのリクエスト
+
+// 自作したミドルウェア①
+app.use((req, res, next) => {
+  console.log("自作したミドルウェア!!!");
+  return next(); // nextを呼ばないと処理が止まってレスポンスまで行かない！
+});
+
+// 自作したミドルウェア②
+app.use((req, res, next) => {
+  console.log("2個目のミドルウェア!!!");
+  return next();
+});
 
 // ホームディレクトリのルーティング
 app.get("/", (req, res) => {
