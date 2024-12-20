@@ -8,6 +8,19 @@
   <body>
     <h1><%= campground.title %></h1>
     <h2><%= campground.location %></h2>
-    <footer><a href="/campgrounds">戻る</a></footer>
+    <p>
+      <a href="/campgrounds/<%= campground.id  %>/edit">編集する</a>
+    </p>
+
+    <form
+      action="/campgrounds/<%= campground.id  %>?_method=DELETE"
+      method="post"
+    >
+      <button>削除する</button>
+    </form>
+
+    <footer>
+      <a href="/campgrounds">一覧に戻る</a>
+    </footer>
   </body>
 </html>
