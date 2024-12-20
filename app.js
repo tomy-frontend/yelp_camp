@@ -26,19 +26,35 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-app.use(morgan("dev")); // Morganを全てのリクエスト
+// app.use(morgan("dev")); // Morganを全てのリクエスト
 
-// 自作したミドルウェア①
-app.use((req, res, next) => {
-  console.log("自作したミドルウェア!!!");
-  return next(); // nextを呼ばないと処理が止まってレスポンスまで行かない！
-});
+// // 自作したミドルウェア①
+// app.use((req, res, next) => {
+//   console.log("自作したミドルウェア!!!");
+//   return next(); // nextを呼ばないと処理が止まってレスポンスまで行かない！
+// });
 
-// 自作したミドルウェア②
-app.use((req, res, next) => {
-  console.log("2個目のミドルウェア!!!");
+// // 自作したミドルウェア②
+// app.use((req, res, next) => {
+//   console.log("2個目のミドルウェア!!!");
+//   return next();
+// });
+
+// 特定ルートへのミドルウェア
+app.use("/campgrounds/:id", (req, res, next) => {
+  console.log(`ID: ${req.params.id}ページへのアクセス`);
   return next();
 });
+
+// 簡易パスワード認証ミドルウェア(!本番では絶対やっちゃだめ!)
+// 関数にすることで、特定のルーティングで使用することができる
+const verifyPassword = (req, res, next) => {
+  const { password } = req.query;
+  if (password === "supersecret") {
+    return next();
+  }
+  res.send("パスワードが必要です。");
+};
 
 // ホームディレクトリのルーティング
 app.get("/", (req, res) => {
@@ -91,6 +107,18 @@ app.delete("/campgrounds/:id", async (req, res) => {
   const { id } = req.params;
   await Campground.findByIdAndDelete(id);
   res.redirect("/campgrounds"); // 一覧ページにリダイレクト
+});
+
+// 認証ページ
+// 第二引数に作成したミドルウェアを設定して、特定のルーティングにだけミドルウェアを設定することができる
+app.get("/secret", verifyPassword, (req, res) => {
+  res.send("ここは秘密のページ!!突破おめでとう！");
+});
+
+// ルーティングの最後に上記どれにも一致しないルートは404ページとして返す。次はないからnext()も必要ない。
+// 記述する場所はルーティング記載の1番最後！！
+app.use((req, res) => {
+  res.status(404).send("ページが見つかりません。");
 });
 
 // サーバー立ち上げ
