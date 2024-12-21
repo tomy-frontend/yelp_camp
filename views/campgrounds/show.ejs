@@ -1,7 +1,7 @@
 <% layout('layouts/boilerplate') -%>
-<h1><%= campground.title %></h1>
-<h2><%= campground.location %></h2>
-<h3><%= campground.price %>円</h3>
+<h1 class="mb-3"><%= campground.title %></h1>
+<h2 class="mb-3"><%= campground.location %></h2>
+<h3 class="mb-3"><%= campground.price %>円</h3>
 <img
   src="<%= campground.image %>"
   alt="<%= campground.title  %>のイメージ画像"
