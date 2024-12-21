@@ -80,11 +80,14 @@ app.get("/campgrounds/new", async (req, res) => {
 });
 
 // 新規登録フォームの送信先のルーティング
-app.post("/campgrounds", async (req, res, next) => {
-  const campground = new Campground(req.body.campground);
-  await campground.save();
-  res.redirect(`/campgrounds/${campground.id}`);
-});
+app.post(
+  "/campgrounds",
+  wrapAsync(async (req, res, next) => {
+    const campground = new Campground(req.body.campground);
+    await campground.save();
+    res.redirect(`/campgrounds/${campground.id}`);
+  })
+);
 
 // asyncなルーティングに対する、try/catchを自動的にしてくれる関数の定義
 // ①asyncな関数を受け取る
@@ -144,9 +147,14 @@ app.delete("/campgrounds/:id", async (req, res) => {
 // });
 
 // カスタムエラーハンドリング
+app.use((err, req, res, next) => {
+  console.log(err.name);
+  next(err);
+});
+
 // エラーハンドリングを設定して、次の処理に渡すミドルウェア
 app.use((err, req, res, next) => {
-  // CastErrorの特別処理を追加
+  // CastErrorの場合の特別処理を追加
   if (err.name === "CastError") {
     return res.status(404).send("指定されたIDが無効です");
   }
