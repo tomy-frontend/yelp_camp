@@ -3,7 +3,12 @@
 <div class="row">
   <h1 class="text-center">キャンプ場の編集</h1>
   <div class="offset-3 col-6">
-    <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="post">
+    <form
+      class="validated-form"
+      action="/campgrounds/<%= campground._id %>?_method=PUT"
+      method="post"
+      novalidate
+    >
       <div class="mb-3">
         <label class="form-label" for="title">タイトル</label>
         <input
@@ -12,7 +17,9 @@
           id="title"
           value="<%= campground.title  %>"
           name="campground[title]"
+          required
         />
+        <div class="valid-feedback">OK!</div>
       </div>
 
       <div class="mb-3">
@@ -23,7 +30,9 @@
           id="location"
           value="<%= campground.location  %>"
           name="campground[location]"
+          required
         />
+        <div class="valid-feedback">OK!</div>
       </div>
 
       <div class="mb-3">
@@ -34,7 +43,9 @@
           id="image"
           value="<%= campground.image  %>"
           name="campground[image]"
+          required
         />
+        <div class="valid-feedback">OK!</div>
       </div>
 
       <div class="mb-3">
@@ -50,7 +61,9 @@
             value="<%= campground.price  %>"
             aria-describedby="price-label"
             name="campground[price]"
+            required
           />
+          <div class="valid-feedback">OK!</div>
         </div>
       </div>
 
@@ -61,9 +74,11 @@
           type="text"
           id="description"
           name="campground[description]"
+          required
         >
 <%= campground.description %></textarea
         >
+        <div class="valid-feedback">OK!</div>
       </div>
 
       <div class="mb-3">
