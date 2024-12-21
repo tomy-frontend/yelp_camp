@@ -81,25 +81,33 @@ app.get("/campgrounds/new", async (req, res) => {
 
 // 新規登録フォームの送信先のルーティング
 app.post("/campgrounds", async (req, res, next) => {
-  try {
-    const campground = new Campground(req.body.campground);
-    await campground.save();
-    res.redirect(`/campgrounds/${campground.id}`);
-  } catch (e) {
-    next(e);
-  }
+  const campground = new Campground(req.body.campground);
+  await campground.save();
+  res.redirect(`/campgrounds/${campground.id}`);
 });
+
+// asyncなルーティングに対する、try/catchを自動的にしてくれる関数の定義
+// ①asyncな関数を受け取る
+// ②返す関数はpromiseを返すのでcatchが使用可能、問題が起きれば自動的にnextが呼ばれて、eを渡すことができる
+function wrapAsync(fn) {
+  return function (req, res, next) {
+    fn(req, res, next).catch((e) => next(e));
+  };
+}
 
 // 詳細ページへのルーティング
-app.get("/campgrounds/:id", async (req, res, next) => {
-  const campground = await Campground.findById(req.params.id);
+app.get(
+  "/campgrounds/:id",
+  wrapAsync(async (req, res) => {
+    const campground = await Campground.findById(req.params.id);
 
-  if (!campground) {
-    return next(new AppError("存在しないページ", 404));
-  }
+    if (!campground) {
+      throw new AppError("存在しないページですよ。", 404);
+    }
 
-  res.render("campgrounds/show", { campground });
-});
+    res.render("campgrounds/show", { campground });
+  })
+);
 
 // 編集ページのルーティング
 app.get("/campgrounds/:id/edit", async (req, res) => {
@@ -135,17 +143,21 @@ app.delete("/campgrounds/:id", async (req, res) => {
 //   throw new AppError("管理者しかアクセスできない", 403);
 // });
 
+// カスタムエラーハンドリング
+// エラーハンドリングを設定して、次の処理に渡すミドルウェア
+app.use((err, req, res, next) => {
+  // CastErrorの特別処理を追加
+  if (err.name === "CastError") {
+    return res.status(404).send("指定されたIDが無効です");
+  }
+  const { status = 500, message = "何かエラーが起きました" } = err;
+  res.status(status).send(message);
+});
+
 // ルーティングの最後に上記どれにも一致しないルートは404ページとして返す。次はないからnext()も必要ない。
 // 記述する場所はルーティング記載の1番最後！！
 app.use((req, res) => {
   res.status(404).send("ページが見つかりません。");
-});
-
-// カスタムエラーハンドリング
-// エラーハンドリングを設定して、次の処理に渡す
-app.use((err, req, res, next) => {
-  const { status = 500, message = "何かエラーが起きました" } = err;
-  res.status(status).send(message);
 });
 
 // サーバー立ち上げ
