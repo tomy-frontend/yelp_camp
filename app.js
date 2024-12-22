@@ -9,7 +9,7 @@ const morgan = require("morgan");
 const ejsMate = require("ejs-mate");
 const catchAsync = require("./utils/catchAsync"); // エラーハンドリング自作クラスの呼び出し
 const ExpressError = require("./utils/ExpressError");
-const Joi = require("joi");
+const { campgroundSchema } = require("./shemas");
 
 // mongooseへの接続
 mongoose
@@ -38,6 +38,17 @@ app.use("/campgrounds/:id", (req, res, next) => {
   return next();
 });
 
+// 新規追加と更新の際のバリデーションチェックミドルウェア
+const validateCampground = (req, res, next) => {
+  const { error } = campgroundSchema.validate(req.body);
+  if (error) {
+    const msg = error.details.map((detail) => detail.message).join(",");
+    throw new ExpressError(msg, 400);
+  } else {
+    next(); // 問題なければ次の処理に進む
+  }
+};
+
 // ホームディレクトリのルーティング
 app.get("/", (req, res) => {
   res.render("home");
@@ -61,24 +72,13 @@ app.get(
   })
 );
 
-// 新規登録フォームの送信先のルーティング + Joiでサーバーサイドのバリデーション
+// 新規登録フォームの送信先のルーティング
+// + validateCampground関数 → Joiでサーバーサイドのバリデーションをするミドルウェア
+// + catchAsync関数 → 非同期処理でエラーがあったらエラーハンドリングミドルウェアに渡すミドルウェア
 app.post(
   "/campgrounds",
+  validateCampground,
   catchAsync(async (req, res) => {
-    const campgroundSchema = Joi.object({
-      campground: Joi.object({
-        title: Joi.string().required(),
-        price: Joi.number().required().min(0),
-        image: Joi.string().required(),
-        location: Joi.string().required(),
-        description: Joi.string().required(),
-      }).required(),
-    });
-    const { error } = campgroundSchema.validate(req.body);
-    if (error) {
-      const msg = error.details.map((detail) => detail.message).join(",");
-      throw new ExpressError(msg, 400);
-    }
     const campground = new Campground(req.body.campground);
     await campground.save();
     res.redirect(`/campgrounds/${campground._id}`);
@@ -104,8 +104,11 @@ app.get(
 );
 
 // 編集処理完了後のフォーム送信後のルーティング
+// + validateCampground関数 → Joiでサーバーサイドのバリデーションをするミドルウェア
+// + catchAsync関数 → 非同期処理でエラーがあったらエラーハンドリングミドルウェアに渡すミドルウェア
 app.put(
   "/campgrounds/:id",
+  validateCampground,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     // 分割代入でそれぞれに値が入る
