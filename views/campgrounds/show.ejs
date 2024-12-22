@@ -4,12 +4,15 @@
   <div class="col-6 offset-3">
     <div class="card mb-3">
       <img
+        class="ratio ratio-4x3"
         src="<%= campground.image %>"
         alt="<%= campground.title  %>のイメージ画像"
+        width="400"
+        height="400"
         loading="lazy"
       />
       <div class="card-body">
-        <h5 class="card-title"><%= campground.title %></h5>
+        <h3 class="card-title"><%= campground.title %></h5>
         <p class="card-text"><%= campground.description %></p>
       </div>
       <ul class="list-group list-group-flush">
