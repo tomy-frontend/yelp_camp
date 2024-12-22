@@ -125,8 +125,11 @@ app.use((err, req, res, next) => {
   // if (err.name === "CastError") {
   //   return res.status(404).send("指定されたIDが無効です");
   // }
-  const { status = 500, message = "何かエラーが起きました" } = err;
-  res.status(status).send(message);
+  const { status = 500 } = err;
+  if (!err.message) {
+    err.message = "何か問題が起きました。";
+  }
+  res.status(status).render("error", { err });
 });
 
 // サーバー立ち上げ
