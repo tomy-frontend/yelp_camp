@@ -9,6 +9,7 @@ const morgan = require("morgan");
 const ejsMate = require("ejs-mate");
 const catchAsync = require("./utils/catchAsync"); // エラーハンドリング自作クラスの呼び出し
 const ExpressError = require("./utils/ExpressError");
+const Joi = require("joi");
 
 // mongooseへの接続
 mongoose
@@ -51,7 +52,7 @@ app.get(
   })
 );
 
-// 新規追加ページのルーティング(ルーティングの場所に注意！)
+// 新規追加ページパスのルーティング(ルーティングの場所に注意！)
 app.get(
   "/campgrounds/new",
   catchAsync(async (req, res) => {
@@ -60,20 +61,31 @@ app.get(
   })
 );
 
-// 新規登録フォームの送信先のルーティング
+// 新規登録フォームの送信先のルーティング + Joiでサーバーサイドのバリデーション
 app.post(
   "/campgrounds",
   catchAsync(async (req, res) => {
-    // 値がない時のエラーハンドリング
-    if (!req.body.campground)
-      throw new ExpressError("不正なキャンプ場のエラーです。", 400); // req.body.campgroundがなければエラー
+    const campgroundSchema = Joi.object({
+      campground: Joi.object({
+        title: Joi.string().required(),
+        price: Joi.number().required().min(0),
+        image: Joi.string().required(),
+        location: Joi.string().required(),
+        description: Joi.string().required(),
+      }).required(),
+    });
+    const { error } = campgroundSchema.validate(req.body);
+    if (error) {
+      const msg = error.details.map((detail) => detail.message).join(",");
+      throw new ExpressError(msg, 400);
+    }
     const campground = new Campground(req.body.campground);
     await campground.save();
     res.redirect(`/campgrounds/${campground._id}`);
   })
 );
 
-// 詳細ページへのルーティング
+// 詳細ページパスへのルーティング
 app.get(
   "/campgrounds/:id",
   catchAsync(async (req, res) => {
@@ -82,7 +94,7 @@ app.get(
   })
 );
 
-// 編集ページのルーティング
+// 編集ページパスのルーティング
 app.get(
   "/campgrounds/:id/edit",
   catchAsync(async (req, res) => {
@@ -91,7 +103,7 @@ app.get(
   })
 );
 
-// 編集処理完了後のルーティング
+// 編集処理完了後のフォーム送信後のルーティング
 app.put(
   "/campgrounds/:id",
   catchAsync(async (req, res) => {
@@ -121,15 +133,11 @@ app.all("*", (req, res, next) => {
 
 // カスタムエラーハンドリングを設定して、次の処理に渡すミドルウェア
 app.use((err, req, res, next) => {
-  // // CastErrorの場合の特別処理を追加
-  // if (err.name === "CastError") {
-  //   return res.status(404).send("指定されたIDが無効です");
-  // }
-  const { status = 500 } = err;
+  const { statusCode = 500 } = err;
   if (!err.message) {
     err.message = "何か問題が起きました。";
   }
-  res.status(status).render("error", { err });
+  res.status(statusCode).render("error", { err });
 });
 
 // サーバー立ち上げ
