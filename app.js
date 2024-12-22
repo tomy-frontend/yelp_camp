@@ -9,7 +9,7 @@ const morgan = require("morgan");
 const ejsMate = require("ejs-mate");
 const catchAsync = require("./utils/catchAsync"); // エラーハンドリング自作クラスの呼び出し
 const ExpressError = require("./utils/ExpressError");
-const { campgroundSchema } = require("./shemas");
+const { campgroundSchema } = require("./schemas");
 
 // mongooseへの接続
 mongoose
