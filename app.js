@@ -81,7 +81,7 @@ app.post(
   catchAsync(async (req, res) => {
     const campground = new Campground(req.body.campground);
     await campground.save();
-    res.redirect(`/campgrounds/${campground._id}`);
+    res.redirect(`/campgrounds/${campground._id}`); // 追加完了後は個別詳細ページにリダイレクト
   })
 );
 
@@ -115,7 +115,7 @@ app.put(
     const campground = await Campground.findByIdAndUpdate(id, {
       ...req.body.campground,
     });
-    res.redirect(`/campgrounds/${campground._id}`);
+    res.redirect(`/campgrounds/${campground._id}`); // 更新完了後は個別詳細ページにリダイレクト
   })
 );
 
@@ -138,7 +138,7 @@ app.all("*", (req, res, next) => {
 app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
   if (!err.message) {
-    err.message = "何か問題が起きました。";
+    err.message = "何か問題が起きました。"; // エラーメッセージがない場合のテキスト
   }
   res.status(statusCode).render("error", { err });
 });
