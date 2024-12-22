@@ -45,7 +45,7 @@ const validateCampground = (req, res, next) => {
     const msg = error.details.map((detail) => detail.message).join(",");
     throw new ExpressError(msg, 400);
   } else {
-    next(); // 問題なければ次の処理に進む
+    next(); // 問題なければ次の処理に進む(必須！これがないと処理止まる)
   }
 };
 
