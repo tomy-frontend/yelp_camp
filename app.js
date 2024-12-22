@@ -32,13 +32,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(morgan("dev"));
 
-// 特定ルートへのミドルウェア作成
+// 特定ルートへのミドルウェア作成(個別詳細ページ限定のミドルウェア)
 app.use("/campgrounds/:id", (req, res, next) => {
   console.log(`ID: ${req.params.id}ページへのアクセス`);
   return next();
 });
 
-// 新規追加と更新の際のバリデーションチェックミドルウェア
+// 新規追加と更新の際のバリデーションチェック自作ミドルウェア
 const validateCampground = (req, res, next) => {
   const { error } = campgroundSchema.validate(req.body);
   if (error) {
