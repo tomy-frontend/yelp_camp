@@ -125,7 +125,7 @@ app.delete(
   catchAsync(async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
-    res.redirect("/campgrounds"); // 一覧ページにリダイレクト
+    res.redirect("/campgrounds"); // 削除後は一覧ページにリダイレクト
   })
 );
 
