@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const Campground = require("./models/campground");
 const campground = require("./models/campground");
+const Review = require("./models/review");
+const review = require("./models/review");
 const morgan = require("morgan");
 const ejsMate = require("ejs-mate");
 const catchAsync = require("./utils/catchAsync"); // エラーハンドリング自作クラスの呼び出し
@@ -126,6 +128,18 @@ app.delete(
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
     res.redirect("/campgrounds"); // 削除後は一覧ページにリダイレクト
+  })
+);
+
+app.post(
+  "/campgrounds/:id/reviews",
+  catchAsync(async (req, res) => {
+    const campground = await Campground.findById(req.params.id);
+    const review = new Review(req.body.review);
+    campground.reviews.push(review);
+    await review.save();
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id}`);
   })
 );
 
