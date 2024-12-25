@@ -1,7 +1,8 @@
 <% layout('layouts/boilerplate') -%>
 
 <div class="row">
-  <div class="col-6 offset-3">
+  <!-- left -->
+  <div class="col-6">
     <div class="card mb-3">
       <img
         class="ratio ratio-4x3"
@@ -33,7 +34,10 @@
       </div>
       <div class="card-footer text-muted">2 days ago</div>
     </div>
+  </div>
 
+  <!-- right -->
+  <div class="col-6">
     <!-- review投稿 -->
     <h2>レビュー</h2>
     <form
@@ -70,9 +74,11 @@
 
     <!-- review表示 -->
     <% for(let review of campground.reviews) { %>
-    <div class="mb-3">
-      <p>評価: <%= review.rating %></p>
-      <p>コメント: <%= review.body %></p>
+    <div class="card mb-3">
+      <div class="card-body">
+        <p class="card-title">評価: <%= review.rating %></p>
+        <p class="card-text">コメント: <%= review.body %></p>
+      </div>
     </div>
     <% } %>
   </div>
