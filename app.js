@@ -133,7 +133,7 @@ app.put(
   })
 );
 
-// 削除ルーティング
+// キャンプ場の削除ルーティング
 app.delete(
   "/campgrounds/:id",
   catchAsync(async (req, res) => {
