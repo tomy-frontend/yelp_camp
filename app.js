@@ -159,6 +159,22 @@ app.post(
   })
 );
 
+// レビューの削除ルーティング
+app.delete(
+  "/campgrounds/:id/reviews/:reviewId",
+  catchAsync(async (req, res) => {
+    const { id, reviewId } = req.params;
+    // 1. キャンプ場のドキュメントから特定のレビューIDを取り除く
+    // $pullは配列から特定の要素を取り除くMongoDBの演算子
+    // reviews配列から reviewId と一致する要素を削除
+    await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } }); // campgroundの中で参照しているreviewsの中から、対象のreviewを取り除いてアップデートする
+
+    // 2. レビューコレクションから実際のレビュードキュメントを完全に削除する
+    await Review.findByIdAndDelete(reviewId); // 対象のレビュー自体を削除する
+    res.redirect(`/campgrounds/${id}`);
+  })
+);
+
 // 全てのメソッドのどんなパスでも対象にするルーティングで404ページを作成
 app.all("*", (req, res, next) => {
   next(new ExpressError("ページが見つかりませんでした", 404));

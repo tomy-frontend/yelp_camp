@@ -78,6 +78,14 @@
       <div class="card-body">
         <p class="card-title">評価: <%= review.rating %></p>
         <p class="card-text">コメント: <%= review.body %></p>
+
+        <!-- 削除ボタン -->
+        <form
+          action="/campgrounds/<%= campground._id%>/reviews/<%= review._id %>?_method=DELETE"
+          method="post"
+        >
+          <button class="btn btn-sm btn-danger">削除する</button>
+        </form>
       </div>
     </div>
     <% } %>
