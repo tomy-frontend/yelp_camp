@@ -17,7 +17,7 @@ const campgroundSchema = new Schema({
   ],
 });
 
-// キャンプ場が削除されると、reviewも削除する関数
+// キャンプ場が削除されると、紐づいているreviewも削除する関数
 const deleteFunc = async function (doc) {
   if (doc) {
     await Review.deleteMany({
