@@ -6,7 +6,6 @@ const methodOverride = require("method-override");
 const Campground = require("./models/campground");
 const campground = require("./models/campground");
 const Review = require("./models/review");
-const review = require("./models/review");
 const morgan = require("morgan");
 const ejsMate = require("ejs-mate");
 const catchAsync = require("./utils/catchAsync"); // エラーハンドリング自作クラスの呼び出し
