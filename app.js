@@ -15,6 +15,7 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
+    useFindAndModify: false,
   })
   .then(() => {
     console.log("MongoDB接続完了!");
@@ -29,6 +30,7 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(morgan("dev"));
+app.use(express.static(path.join(__dirname, "public"))); // 静的ファイルの読み込み
 
 // 特定ルートへのミドルウェア作成(個別詳細ページ限定のミドルウェア)
 app.use("/campgrounds/:id", (req, res, next) => {
