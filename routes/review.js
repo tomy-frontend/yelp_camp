@@ -29,6 +29,7 @@ router.post(
     campground.reviews.push(review);
     await review.save();
     await campground.save();
+    req.flash("success", "レビューを投稿しました!");
     res.redirect(`/campgrounds/${campground._id}`);
   })
 );
@@ -45,6 +46,7 @@ router.delete(
 
     // 2. レビューコレクションから実際のレビュードキュメントを完全に削除する
     await Review.findByIdAndDelete(reviewId); // 対象のレビュー自体を削除する
+    req.flash("success", "レビューを削除しました!");
     res.redirect(`/campgrounds/${id}`);
   })
 );

@@ -1,0 +1,23 @@
+<!-- 成功の場合の処理 -->
+<% if(success && success.length) { %>
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  <%= success %><button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"
+  ></button>
+</div>
+<% } %>
+
+<!-- エラーの場合の処理 -->
+<% if(error && error.length) { %>
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <%= error %><button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"
+  ></button>
+</div>
+<% } %>
