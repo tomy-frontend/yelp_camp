@@ -3,14 +3,11 @@ const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
 const methodOverride = require("method-override");
-const Campground = require("./models/campground");
-const campground = require("./models/campground");
-const Review = require("./models/review");
 const morgan = require("morgan");
 const ejsMate = require("ejs-mate");
-const catchAsync = require("./utils/catchAsync"); // エラーハンドリング自作クラスの呼び出し
 const ExpressError = require("./utils/ExpressError");
-const { campgroundSchema, reviewSchema } = require("./schemas");
+const campgroundRoutes = require("./routes/campgrounds");
+const reviewRoutes = require("./routes/review");
 
 // mongooseへの接続
 mongoose
@@ -39,141 +36,14 @@ app.use("/campgrounds/:id", (req, res, next) => {
   return next();
 });
 
-// 新規追加と更新の際のバリデーションチェック自作ミドルウェア
-const validateCampground = (req, res, next) => {
-  const { error } = campgroundSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map((detail) => detail.message).join(",");
-    throw new ExpressError(msg, 400);
-  } else {
-    next(); // 問題なければ次の処理に進む(必須！これがないと処理止まる)
-  }
-};
-
-// reviewのバリデーションチェック自作ミドルウェア
-const validateReview = (req, res, next) => {
-  const { error } = reviewSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map((detail) => detail.message).join(",");
-    throw new ExpressError(msg, 400);
-  } else {
-    next(); // 問題なければ次の処理に進む(必須！これがないと処理止まる)
-  }
-};
-
 // ホームディレクトリのルーティング
 app.get("/", (req, res) => {
   res.render("home");
 });
 
-// campgroundルーティング(indexページ)
-app.get(
-  "/campgrounds",
-  catchAsync(async (req, res) => {
-    const campgrounds = await campground.find({});
-    res.render("campgrounds/index", { campgrounds });
-  })
-);
-
-// 新規追加ページパスのルーティング(ルーティングの場所に注意！)
-app.get(
-  "/campgrounds/new",
-  catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
-    res.render("campgrounds/new");
-  })
-);
-
-// 新規登録フォームの送信先のルーティング
-// + validateCampground関数 → Joiでサーバーサイドのバリデーションをするミドルウェア
-// + catchAsync関数 → 非同期処理でエラーがあったらエラーハンドリングミドルウェアに渡すミドルウェア
-app.post(
-  "/campgrounds",
-  validateCampground,
-  catchAsync(async (req, res) => {
-    const campground = new Campground(req.body.campground);
-    await campground.save();
-    res.redirect(`/campgrounds/${campground._id}`); // 追加完了後は個別詳細ページにリダイレクト
-  })
-);
-
-// 詳細ページパスへのルーティング
-app.get(
-  "/campgrounds/:id",
-  catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id).populate(
-      "reviews"
-    );
-    res.render("campgrounds/show", { campground });
-  })
-);
-
-// 編集ページパスのルーティング
-app.get(
-  "/campgrounds/:id/edit",
-  catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
-    res.render("campgrounds/edit", { campground });
-  })
-);
-
-// 編集処理完了後のフォーム送信後のルーティング
-// + validateCampground関数 → Joiでサーバーサイドのバリデーションをするミドルウェア
-// + catchAsync関数 → 非同期処理でエラーがあったらエラーハンドリングミドルウェアに渡すミドルウェア
-app.put(
-  "/campgrounds/:id",
-  validateCampground,
-  catchAsync(async (req, res) => {
-    const { id } = req.params;
-    // 分割代入でそれぞれに値が入る
-    const campground = await Campground.findByIdAndUpdate(id, {
-      ...req.body.campground,
-    });
-    res.redirect(`/campgrounds/${campground._id}`); // 更新完了後は個別詳細ページにリダイレクト
-  })
-);
-
-// キャンプ場の削除ルーティング
-app.delete(
-  "/campgrounds/:id",
-  catchAsync(async (req, res) => {
-    const { id } = req.params;
-    await Campground.findByIdAndDelete(id);
-    res.redirect("/campgrounds"); // 削除後は一覧ページにリダイレクト
-  })
-);
-
-// reviewの投稿追加のルーティング
-// + Joiでサーバーサイドのバリデーションチェック
-// + catchAsync関数 → 非同期処理でエラーがあったらエラーハンドリングミドルウェアに渡すミドルウェア
-app.post(
-  "/campgrounds/:id/reviews",
-  validateReview,
-  catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
-    const review = new Review(req.body.review);
-    campground.reviews.push(review);
-    await review.save();
-    await campground.save();
-    res.redirect(`/campgrounds/${campground._id}`);
-  })
-);
-
-// レビューの削除ルーティング
-app.delete(
-  "/campgrounds/:id/reviews/:reviewId",
-  catchAsync(async (req, res) => {
-    const { id, reviewId } = req.params;
-    // 1. キャンプ場のドキュメントから特定のレビューIDを取り除く
-    // $pullは配列から特定の要素を取り除くMongoDBの演算子
-    // reviews配列から reviewId と一致する要素を削除
-    await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } }); // campgroundの中で参照しているreviewsの中から、対象のreviewを取り除いてアップデートする
-
-    // 2. レビューコレクションから実際のレビュードキュメントを完全に削除する
-    await Review.findByIdAndDelete(reviewId); // 対象のレビュー自体を削除する
-    res.redirect(`/campgrounds/${id}`);
-  })
-);
+// 別ファイルで定義したRouteを使用する
+app.use("/campgrounds", campgroundRoutes);
+app.use("/campgrounds/:id/reviews", reviewRoutes);
 
 // 全てのメソッドのどんなパスでも対象にするルーティングで404ページを作成
 app.all("*", (req, res, next) => {
