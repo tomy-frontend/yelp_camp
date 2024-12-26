@@ -44,6 +44,7 @@ router.post(
   catchAsync(async (req, res) => {
     const campground = new Campground(req.body.campground);
     await campground.save();
+    req.flash("success", "新しいキャンプ場を登録しました！");
     res.redirect(`/campgrounds/${campground._id}`); // 追加完了後は個別詳細ページにリダイレクト
   })
 );

@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const morgan = require("morgan");
 const ejsMate = require("ejs-mate");
+const session = require("express-session");
+const flash = require("connect-flash");
 const ExpressError = require("./utils/ExpressError");
 const campgroundRoutes = require("./routes/campgrounds");
 const reviewRoutes = require("./routes/review");
@@ -31,6 +33,28 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public"))); // 静的ファイルの読み込み
+
+// sessionの設定
+const sessionConfig = {
+  secret: "mysecret",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    // cookieの有効期限の設定
+    maxAge: 1000 * 60 * 60 * 24 * 7, // なんの数字かわかるように意図的に計算式にする。(1週間の有効期限)
+  },
+};
+
+app.use(session(sessionConfig));
+app.use(flash());
+
+app.use((req, res, next) => {
+  // res.localsに保存することで、そのリクエスト/レスポンスのサイクル中でテンプレート内のどこからでもアクセスできる
+  res.locals.success = req.flash("success"); // 成功した時のflash
+  res.locals.error = req.flash("error"); // エラーの時のflash
+  next();
+});
 
 // 特定ルートへのミドルウェア作成(個別詳細ページ限定のミドルウェア)
 app.use("/campgrounds/:id", (req, res, next) => {
