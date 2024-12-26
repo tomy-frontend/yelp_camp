@@ -41,7 +41,7 @@ const sessionConfig = {
   saveUninitialized: true,
   cookie: {
     httpOnly: true,
-    // cookieの有効期限の設定
+    // cookieの有効期限の設定(ミリ秒で指定)
     maxAge: 1000 * 60 * 60 * 24 * 7, // なんの数字かわかるように意図的に計算式にする。(1週間の有効期限)
   },
 };
