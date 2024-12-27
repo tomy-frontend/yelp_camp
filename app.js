@@ -46,7 +46,7 @@ const sessionConfig = {
   },
 };
 
-app.use(session(sessionConfig));
+app.use(session(sessionConfig)); // sessionを使用する
 app.use(flash());
 
 app.use((req, res, next) => {
