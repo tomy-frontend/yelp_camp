@@ -64,7 +64,7 @@ app.use("/campgrounds/:id", (req, res, next) => {
 
 // ホームディレクトリのルーティング
 app.get("/", (req, res) => {
-  res.render("home");
+  res.render("HOME");
 });
 
 // 別ファイルで定義したRouteを使用する
