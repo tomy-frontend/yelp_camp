@@ -4,6 +4,7 @@ const ExpressError = require("../utils/ExpressError");
 const Campground = require("../models/campground");
 const campground = require("../models/campground");
 const { campgroundSchema } = require("../schemas");
+const { isLoggedIn } = require("../middleware");
 const router = express.Router();
 
 // 新規追加と更新の際のバリデーションチェック自作ミドルウェア
@@ -27,19 +28,17 @@ router.get(
 );
 
 // 新規追加ページパスのルーティング(ルーティングの場所に注意！)
-router.get(
-  "/new",
-  catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
-    res.render("campgrounds/new");
-  })
-);
+// isLoggedInミドルウェアでログイン状態の場合のみアクセス可能
+router.get("/new", isLoggedIn, (req, res) => {
+  res.render("campgrounds/new");
+});
 
 // 新規登録フォームの送信先のルーティング
 // + validateCampground関数 → Joiでサーバーサイドのバリデーションをするミドルウェア
 // + catchAsync関数 → 非同期処理でエラーがあったらエラーハンドリングミドルウェアに渡すミドルウェア
 router.post(
   "/",
+  isLoggedIn,
   validateCampground,
   catchAsync(async (req, res) => {
     const campground = new Campground(req.body.campground);
@@ -68,6 +67,7 @@ router.get(
 // 編集ページパスのルーティング
 router.get(
   "/:id/edit",
+  isLoggedIn,
   catchAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     if (!campground) {
@@ -83,6 +83,7 @@ router.get(
 // + catchAsync関数 → 非同期処理でエラーがあったらエラーハンドリングミドルウェアに渡すミドルウェア
 router.put(
   "/:id",
+  isLoggedIn,
   validateCampground,
   catchAsync(async (req, res) => {
     const { id } = req.params;
@@ -98,6 +99,7 @@ router.put(
 // キャンプ場の削除ルーティング
 router.delete(
   "/:id",
+  isLoggedIn,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
