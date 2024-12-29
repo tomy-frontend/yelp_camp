@@ -18,6 +18,9 @@
       </div>
       <ul class="list-group list-group-flush">
         <li class="list-group-item text-muted"><%= campground.location %></li>
+        <li class="list-group-item">
+          登録者: <%= campground.author.username %> さん
+        </li>
         <li class="list-group-item text-muted">￥<%= campground.price %>/泊</li>
       </ul>
       <div class="card-body">

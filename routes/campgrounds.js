@@ -42,6 +42,7 @@ router.post(
   validateCampground,
   catchAsync(async (req, res) => {
     const campground = new Campground(req.body.campground);
+    campground.author = req.user._id; // 今ログインしているユーザーをauthorとして登録する
     await campground.save();
     req.flash("success", "新しいキャンプ場を登録しました！");
     res.redirect(`/campgrounds/${campground._id}`); // 追加完了後は個別詳細ページにリダイレクト
@@ -52,9 +53,9 @@ router.post(
 router.get(
   "/:id",
   catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id).populate(
-      "reviews"
-    );
+    const campground = await Campground.findById(req.params.id)
+      .populate("reviews")
+      .populate("author");
     // 削除された等でcampgroundがなかった時の処理&flashでエラーの文言を表示する
     if (!campground) {
       req.flash("error", "キャンプ場は見つかりませんでした。");
