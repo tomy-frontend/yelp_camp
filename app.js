@@ -1,3 +1,8 @@
+if (process.env.NODE_ENV !== "production") {
+  // Node.jsがもし本番用じゃない時はこの設定で動かす。
+  require("dotenv").config();
+}
+
 const express = require("express");
 const app = express();
 const path = require("path");
