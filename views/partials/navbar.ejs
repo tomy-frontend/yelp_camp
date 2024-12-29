@@ -24,6 +24,16 @@
           <a class="nav-link" href="/campgrounds/new">新規登録</a>
         </li>
       </ul>
+
+      <!-- ログイン状態に応じてレンダリングされるボタンを制御する -->
+      <div class="navbar-nav ms-auto">
+        <% if(!currentUser) { %>
+        <a href="/login" class="nav-link">ログイン</a>
+        <a href="/register" class="nav-link">ユーザー登録</a>
+        <% } else { %>
+        <a href="/logout" class="nav-link">ログアウト</a>
+        <% } %>
+      </div>
     </div>
   </div>
 </nav>

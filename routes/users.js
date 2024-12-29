@@ -46,4 +46,16 @@ router.post(
   }
 );
 
+// ログアウトルート
+router.get("/logout", (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      // エラーがあった場合の処理
+      return next(err);
+    }
+    req.flash("success", "ログアウトしました！");
+    res.redirect("/campgrounds");
+  });
+});
+
 module.exports = router;

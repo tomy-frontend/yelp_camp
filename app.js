@@ -63,6 +63,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use(flash());
 
 app.use((req, res, next) => {
+  res.locals.currentUser = req.user; // localsのcurrentUserにreq.userを渡す
   // res.localsに保存することで、そのリクエスト/レスポンスのサイクル中でテンプレート内のどこからでもアクセスできる
   res.locals.success = req.flash("success"); // 成功した時のflash
   res.locals.error = req.flash("error"); // エラーの時のflash
