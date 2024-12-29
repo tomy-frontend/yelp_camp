@@ -10,6 +10,7 @@ const flash = require("connect-flash");
 const ExpressError = require("./utils/ExpressError");
 const campgroundRoutes = require("./routes/campgrounds");
 const reviewRoutes = require("./routes/review");
+const userRoutes = require("./routes/users");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/users");
@@ -79,15 +80,8 @@ app.get("/", (req, res) => {
   res.render("HOME");
 });
 
-app.get("/fakeuser", async (req, res) => {
-  const user = await new User({
-    email: "hoge@example.com",
-    username: "hogehoge",
-  });
-
-  const newUser = await User.register(user, "mogemoge"); // 第一引数にuserインスタンス、第二引数にpassword
-  res.send(newUser);
-});
+// user,loginルート
+app.use("/", userRoutes);
 
 // 別ファイルで定義したRouteを使用する
 app.use("/campgrounds", campgroundRoutes);
