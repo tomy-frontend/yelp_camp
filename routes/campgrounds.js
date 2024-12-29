@@ -4,7 +4,8 @@ const campgrounds = require("../controllers/campgrounds");
 const { isLoggedIn, isAuthor, validateCampground } = require("../middleware");
 const router = express.Router();
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+const { storage } = require("../cloudinary");
+const upload = multer({ storage }); // cloudinaryのstorageを保存先にする
 
 router
   .route("/")
