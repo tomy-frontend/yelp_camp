@@ -37,14 +37,22 @@ router.get("/login", (req, res) => {
 // passportのミドルウェアを差し込んで、optionを設定するだけで認証プロセスを実行してくれる
 router.post(
   "/login",
-  // authenticate()の裏で起こっていること:ユーザー検索,パスワード検証,セッション管理,エラーハンドリング
+  // 認証前にreturnToを一時保存するミドルウェア
+  (req, res, next) => {
+    const returnTo = req.session.returnTo;
+    req.tempReturnTo = returnTo; // reqオブジェクトに一時保存
+    next();
+  },
   passport.authenticate("local", {
-    failureFlash: true, // 失敗時のフラッシュメッセージを有効化
-    failureRedirect: "/login", // 失敗時のリダイレクト先
+    failureFlash: true,
+    failureRedirect: "/login",
   }),
   (req, res) => {
     req.flash("success", "おかえりなさい！");
-    res.redirect("/campgrounds");
+    // 一時保存した値を使用
+    const redirectUrl = req.tempReturnTo || "/campgrounds";
+    delete req.session.returnTo;
+    res.redirect(redirectUrl);
   }
 );
 
