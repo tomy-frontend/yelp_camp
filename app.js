@@ -10,6 +10,9 @@ const flash = require("connect-flash");
 const ExpressError = require("./utils/ExpressError");
 const campgroundRoutes = require("./routes/campgrounds");
 const reviewRoutes = require("./routes/review");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/users");
 
 // mongooseへの接続
 mongoose
@@ -47,6 +50,15 @@ const sessionConfig = {
 };
 
 app.use(session(sessionConfig)); // sessionを使用する
+
+// passportのセットアップ
+app.use(passport.initialize()); // passportを使用するためのセットアップ
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser()); // sessionの中にどうやってUser情報を埋め込みますか？
+passport.deserializeUser(User.deserializeUser());
+
+// flashの使用
 app.use(flash());
 
 app.use((req, res, next) => {
@@ -65,6 +77,16 @@ app.use("/campgrounds/:id", (req, res, next) => {
 // ホームディレクトリのルーティング
 app.get("/", (req, res) => {
   res.render("HOME");
+});
+
+app.get("/fakeuser", async (req, res) => {
+  const user = await new User({
+    email: "hoge@example.com",
+    username: "hogehoge",
+  });
+
+  const newUser = await User.register(user, "mogemoge"); // 第一引数にuserインスタンス、第二引数にpassword
+  res.send(newUser);
 });
 
 // 別ファイルで定義したRouteを使用する
