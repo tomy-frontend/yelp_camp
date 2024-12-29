@@ -1,21 +1,9 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true }); // mergeParamsで明示的に宣言する必要がある。親からIDが渡ってくるようになる
 const catchAsync = require("../utils/catchAsync");
-const ExpressError = require("../utils/ExpressError");
 const Campground = require("../models/campground");
 const Review = require("../models/review");
-const { reviewSchema } = require("../schemas");
-
-// reviewのバリデーションチェック自作ミドルウェア
-const validateReview = (req, res, next) => {
-  const { error } = reviewSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map((detail) => detail.message).join(",");
-    throw new ExpressError(msg, 400);
-  } else {
-    next(); // 問題なければ次の処理に進む(必須！これがないと処理止まる)
-  }
-};
+const { validateReview } = require("../middleware");
 
 // reviewの投稿追加のルーティング
 // + Joiでサーバーサイドのバリデーションチェック
