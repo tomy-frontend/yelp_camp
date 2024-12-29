@@ -46,6 +46,7 @@
 
   <!-- right -->
   <div class="col-6">
+    <% if(currentUser) { %>
     <!-- review投稿 -->
     <h2>レビュー</h2>
     <form
@@ -79,14 +80,21 @@
       </div>
       <button class="btn btn-success">投稿する</button>
     </form>
+    <% } %>
 
     <!-- review表示 -->
     <% for(let review of campground.reviews) { %>
     <div class="card mb-3">
       <div class="card-body">
         <p class="card-title">評価: <%= review.rating %></p>
+        <p class="card-sub-title mb-2 text-muted">
+          投稿者: <%= review.author ? review.author.username : '不明なユーザー'
+          %>
+        </p>
         <p class="card-text">コメント: <%= review.body %></p>
 
+        <!-- ログインユーザー = 登録ユーザーの場合のみ削除ボタン表示 -->
+        <% if(currentUser && review.author.equals(currentUser._id)) { %>
         <!-- 削除ボタン -->
         <form
           action="/campgrounds/<%= campground._id%>/reviews/<%= review._id %>?_method=DELETE"
@@ -94,6 +102,7 @@
         >
           <button class="btn btn-sm btn-danger">削除する</button>
         </form>
+        <% } %>
       </div>
     </div>
     <% } %>

@@ -41,8 +41,14 @@ router.get(
   "/:id",
   catchAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id)
-      .populate("reviews")
+      .populate({
+        path: "reviews",
+        populate: {
+          path: "author",
+        },
+      })
       .populate("author");
+    console.log(campground);
     // 削除された等でcampgroundがなかった時の処理&flashでエラーの文言を表示する
     if (!campground) {
       req.flash("error", "キャンプ場は見つかりませんでした。");

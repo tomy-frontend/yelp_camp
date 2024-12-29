@@ -3,17 +3,19 @@ const router = express.Router({ mergeParams: true }); // mergeParamsで明示的
 const catchAsync = require("../utils/catchAsync");
 const Campground = require("../models/campground");
 const Review = require("../models/review");
-const { validateReview } = require("../middleware");
+const { validateReview, isLoggedIn, isReviewAuthor } = require("../middleware");
 
 // reviewの投稿追加のルーティング
 // + Joiでサーバーサイドのバリデーションチェック
 // + catchAsync関数 → 非同期処理でエラーがあったらエラーハンドリングミドルウェアに渡すミドルウェア
 router.post(
   "/",
+  isLoggedIn,
   validateReview,
   catchAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     const review = new Review(req.body.review);
+    review.author = req.user._id; // req.user.id ではなく req.user._id を使用
     campground.reviews.push(review);
     await review.save();
     await campground.save();
@@ -25,6 +27,8 @@ router.post(
 // レビューの削除ルーティング
 router.delete(
   "/:reviewId",
+  isLoggedIn,
+  isReviewAuthor,
   catchAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     // 1. キャンプ場のドキュメントから特定のレビューIDを取り除く
