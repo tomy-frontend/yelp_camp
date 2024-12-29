@@ -9,16 +9,18 @@ router.get("/register", (req, res) => {
 });
 
 // POST /register 登録フォームのリクエスト先
-router.post("/register", async (req, res) => {
+router.post("/register", async (req, res, next) => {
   try {
     const { email, username, password } = req.body;
     const user = await new User({ email, username });
 
     // register()の裏で起こっていること: パスワードのソルト生成,パスワードのハッシュ化,ユーザー情報の保存,重複チェック
     const registeredUser = await User.register(user, password);
-    console.log(registeredUser); // 生成データの確認用
-    req.flash("success", "yelp-campへようこそ！");
-    res.redirect("/campgrounds");
+    req.login(registeredUser, (err) => {
+      if (err) return next(err);
+      req.flash("success", "yelp-campへようこそ！");
+      res.redirect("/campgrounds");
+    });
   } catch (e) {
     req.flash("error", e.message);
     res.redirect("/register");
