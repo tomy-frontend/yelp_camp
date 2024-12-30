@@ -9,6 +9,7 @@
 <div class="card mb-3">
   <div class="row">
     <div class="col-md-4">
+      <% if(campground.images && campground.images.length) { %>
       <img
         class="img-fluid object-fit-cover"
         src="<%= campground.images[0].url %>"
@@ -17,6 +18,16 @@
         height="400"
         loading="lazy"
       />
+      <% } else { %>
+      <img
+        class="img-fluid object-fit-cover"
+        src="https://res.cloudinary.com/ddc14kjnx/image/upload/v1735524459/YelpCamp/h9hmxnsxw3bcwktcsix4.png"
+        alt="何もない時のサムネイル"
+        width="600"
+        height="400"
+        loading="lazy"
+      />
+      <% } %>
     </div>
     <div class="col-md-8">
       <div class="card-body">

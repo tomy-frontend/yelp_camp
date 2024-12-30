@@ -31,6 +31,13 @@ const seedDB = async () => {
       title: `${sample(descriptors)}・${sample(places)}`,
       description:
         "これはダミーテキストです。この文章は仮のものです。文字数、文体、内容の確認のためにここに表示されています。これはダミーテキストです。この文章は仮のものです。文字数、文体、内容の確認のためにここに表示されています。",
+      geometry: {
+        type: "Point",
+        coordinates: [
+          cities[randomCityIndex].longitude,
+          cities[randomCityIndex].latitude,
+        ],
+      },
       price,
       images: [
         {
