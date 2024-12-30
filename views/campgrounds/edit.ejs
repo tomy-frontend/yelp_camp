@@ -81,6 +81,21 @@
           multiple
         />
       </div>
+      <div class="mb-3">
+        <!-- name="deleteImages[]"とすることによって、画像の配列としてパースしてくれる -->
+        <% campground.images.forEach(function(img,i) { %>
+        <img src="<%= img.thumbnail %>" class="img-thumbnail" alt="" />
+        <div class="form-check-inline">
+          <input
+            type="checkbox"
+            name="deleteImages[]"
+            id="image-<%= i %>"
+            value="<%= img.filename %>"
+          />
+        </div>
+        <label for="image-<%= i %>">削除する</label>
+        <% }) %>
+      </div>
 
       <div class="mb-3">
         <button class="btn btn-info">更新する</button>
