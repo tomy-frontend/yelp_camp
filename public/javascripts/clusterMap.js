@@ -1,11 +1,13 @@
 mapboxgl.accessToken = mapToken;
 
 const map = new mapboxgl.Map({
-  container: "map",
+  container: "cluster-map",
   style: "mapbox://styles/mapbox/light-v10",
   center: [138, 39], // 日本中心
   zoom: 3,
 });
+
+map.addControl(new mapboxgl.NavigationControl());
 
 map.on("load", () => {
   console.log("Map読み込み完了");
