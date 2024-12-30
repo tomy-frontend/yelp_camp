@@ -49,7 +49,8 @@ const sessionConfig = {
   resave: false,
   saveUninitialized: true,
   cookie: {
-    httpOnly: true,
+    httpOnly: true, // JavaScriptからはcookieにアクセスできない
+    // secure: true, // httpsのみを許可する。開発時はhttpだが、本番はhttpsなので最終的にtrueにする
     // cookieの有効期限の設定(ミリ秒で指定)
     maxAge: 1000 * 60 * 60 * 24 * 7, // なんの数字かわかるように意図的に計算式にする。(1週間の有効期限)
   },
