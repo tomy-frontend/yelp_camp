@@ -1,5 +1,8 @@
 const Campground = require("../models/campground");
 const { cloudinary } = require("../cloudinary");
+const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
+const mapboxToken = process.env.MAPBOX_TOKEN;
+const geocoder = mbxGeocoding({ accessToken: mapboxToken });
 
 module.exports.index = async (req, res) => {
   const campgrounds = await Campground.find({});
@@ -28,7 +31,15 @@ module.exports.showCampground = async (req, res) => {
 };
 
 module.exports.createCampground = async (req, res) => {
+  // 新規登録フォームから渡ってきた地名から、度経度を取得する
+  const geoData = await geocoder
+    .forwardGeocode({
+      query: req.body.campground.location,
+      limit: 1,
+    })
+    .send();
   const campground = new Campground(req.body.campground);
+  campground.geometry = geoData.body.features[0].geometry; // 取得したgeometryの情報を保存
   campground.images = req.files.map((f) => ({
     url: f.path,
     filename: f.filename,
@@ -36,7 +47,7 @@ module.exports.createCampground = async (req, res) => {
 
   campground.author = req.user._id; // 今ログインしているユーザーをauthorとして登録する
   await campground.save();
-  console.log(campground.images);
+  console.log(campground);
   req.flash("success", "新しいキャンプ場を登録しました！");
   res.redirect(`/campgrounds/${campground._id}`); // 追加完了後は個別詳細ページにリダイレクト
 };
