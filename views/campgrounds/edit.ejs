@@ -37,11 +37,6 @@
       </div>
 
       <div class="mb-3">
-        <label class="form-label" for="image">画像を追加</label>
-        <input type="file" name="image" id="image" multiple />
-      </div>
-
-      <div class="mb-3">
         <label class="form-label" for="price">価格</label>
         <div class="input-group">
           <span class="input-group-text" id="price-label">￥</span>
@@ -72,6 +67,19 @@
 <%= campground.description %></textarea
         >
         <div class="valid-feedback">OK!</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="formFileMultiple" class="form-label" for="image"
+          >画像の追加アップロード</label
+        >
+        <input
+          class="form-control"
+          id="image"
+          name="image"
+          type="file"
+          multiple
+        />
       </div>
 
       <div class="mb-3">
