@@ -4,45 +4,76 @@
 <div class="row">
   <!-- left -->
   <div class="col-6">
-    <div class="card mb-3">
-      <img
-        class="ratio ratio-4x3"
-        src="<%= campground.image %>"
-        alt="<%= campground.title  %>のイメージ画像"
-        width="400"
-        height="400"
-        loading="lazy"
-      />
-      <div class="card-body">
-        <h3 class="card-title"><%= campground.title %></h3>
-        <p class="card-text"><%= campground.description %></p>
+    <div id="campgroundCarousel" class="carousel slide">
+      <div class="carousel-inner">
+        <% campground.images.forEach((img,i)=> { %> <div class="carousel-item
+        <%= i === 0 ? 'active': "" %>">
+        <img
+          class="ratio ratio-4x3 d-block w-100"
+          src="<%= img.url %>"
+          alt="<%= campground.title %>のイメージ画像"
+          width="400"
+          height="400"
+          loading="lazy"
+        />
       </div>
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item text-muted"><%= campground.location %></li>
-        <li class="list-group-item">
-          登録者: <%= campground.author.username %> さん
-        </li>
-        <li class="list-group-item text-muted">￥<%= campground.price %>/泊</li>
-      </ul>
-
-      <!-- ログインしているユーザー = 作成者でないと編集・削除ボタンは表示しない -->
-      <% if(currentUser && campground.author.equals(currentUser._id)) { %>
-      <div class="card-body">
-        <a href="/campgrounds/<%= campground.id  %>/edit" class="btn btn-info"
-          >編集する</a
-        >
-        <form
-          class="d-inline"
-          action="/campgrounds/<%= campground.id  %>?_method=DELETE"
-          method="post"
-        >
-          <button class="btn btn-danger">削除する</button>
-        </form>
-      </div>
-      <% } %>
-
-      <div class="card-footer text-muted">2 days ago</div>
+      <% }) %>
     </div>
+
+    <!-- 画像が1枚以上の時だけprev,nextボタンを表示する -->
+    <% if(campground.images.length > 1) { %>
+    <button
+      class="carousel-control-prev"
+      type="button"
+      data-bs-target="#campgroundCarousel"
+      data-bs-slide="prev"
+    >
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button
+      class="carousel-control-next"
+      type="button"
+      data-bs-target="#campgroundCarousel"
+      data-bs-slide="next"
+    >
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+    <% } %>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <h3 class="card-title"><%= campground.title %></h3>
+      <p class="card-text"><%= campground.description %></p>
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item text-muted"><%= campground.location %></li>
+      <li class="list-group-item">
+        登録者: <%= campground.author.username %> さん
+      </li>
+      <li class="list-group-item text-muted">￥<%= campground.price %>/泊</li>
+    </ul>
+
+    <!-- ログインしているユーザー = 作成者でないと編集・削除ボタンは表示しない -->
+    <% if(currentUser && campground.author.equals(currentUser._id)) { %>
+    <div class="card-body">
+      <a href="/campgrounds/<%= campground.id  %>/edit" class="btn btn-info"
+        >編集する</a
+      >
+      <form
+        class="d-inline"
+        action="/campgrounds/<%= campground.id  %>?_method=DELETE"
+        method="post"
+      >
+        <button class="btn btn-danger">削除する</button>
+      </form>
+    </div>
+    <% } %>
+
+    <div class="card-footer text-muted">2 days ago</div>
+  </div>
   </div>
 
   <!-- right -->

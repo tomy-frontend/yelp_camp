@@ -28,8 +28,14 @@ module.exports.showCampground = async (req, res) => {
 
 module.exports.createCampground = async (req, res) => {
   const campground = new Campground(req.body.campground);
+  campground.images = req.files.map((f) => ({
+    url: f.path,
+    filename: f.filename,
+  }));
+
   campground.author = req.user._id; // 今ログインしているユーザーをauthorとして登録する
   await campground.save();
+  console.log(campground.images);
   req.flash("success", "新しいキャンプ場を登録しました！");
   res.redirect(`/campgrounds/${campground._id}`); // 追加完了後は個別詳細ページにリダイレクト
 };
@@ -46,11 +52,17 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.updateCampground = async (req, res) => {
   const { id } = req.params;
-  const camp = await Campground.findByIdAndUpdate(id, {
+  const campground = await Campground.findByIdAndUpdate(id, {
     ...req.body.campground,
   });
+  const imgs = req.files.map((f) => ({
+    url: f.path,
+    filename: f.filename,
+  }));
+  campground.images.push(...imgs);
+  await campground.save();
   req.flash("success", "キャンプ場を更新しました!");
-  res.redirect(`/campgrounds/${camp._id}`); // 更新完了後は個別詳細ページにリダイレクト
+  res.redirect(`/campgrounds/${campground._id}`); // 更新完了後は個別詳細ページにリダイレクト
 };
 
 module.exports.deleteCampground = async (req, res) => {

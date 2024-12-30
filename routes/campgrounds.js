@@ -10,15 +10,12 @@ const upload = multer({ storage }); // cloudinaryのstorageを保存先にする
 router
   .route("/")
   .get(catchAsync(campgrounds.index))
-  // .post(
-  //   isLoggedIn,
-  //   validateCampground,
-  //   catchAsync(campgrounds.createCampground)
-  // );
-  .post(upload.array("image"), (req, res) => {
-    console.log(req.body, req.files);
-    res.send("受付完了");
-  });
+  .post(
+    isLoggedIn,
+    upload.array("image"),
+    validateCampground,
+    catchAsync(campgrounds.createCampground)
+  );
 
 router.get("/new", isLoggedIn, campgrounds.renderNewForm);
 
@@ -28,6 +25,7 @@ router
   .put(
     isLoggedIn,
     isAuthor,
+    upload.array("image"),
     validateCampground,
     catchAsync(campgrounds.updateCampground)
   )
