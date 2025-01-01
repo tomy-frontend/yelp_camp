@@ -41,7 +41,7 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(morgan("dev"));
-app.use(express.static(path.join(__dirname, "public"))); // 静的ファイルの読み込み
+app.use(express.static(path.join(__dirname, "public")));
 
 // sessionの設定
 const sessionConfig = {
@@ -82,7 +82,6 @@ app.use("/campgrounds/:id", (req, res, next) => {
   return next();
 });
 
-// ホームディレクトリのルーティング
 app.get("/", (req, res) => {
   res.render("HOME");
 });
