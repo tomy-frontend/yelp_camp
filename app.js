@@ -93,7 +93,6 @@ app.use("/", userRoutes);
 app.use("/campgrounds", campgroundRoutes);
 app.use("/campgrounds/:id/reviews", reviewRoutes);
 
-// 全てのメソッドのどんなパスでも対象にするルーティングで404ページを作成
 app.all("*", (req, res, next) => {
   next(new ExpressError("ページが見つかりませんでした", 404));
 });
