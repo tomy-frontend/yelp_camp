@@ -101,7 +101,7 @@ app.all("*", (req, res, next) => {
 app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
   if (!err.message) {
-    err.message = "何か問題が起きました。"; // エラーメッセージがない場合のテキスト
+    err.message = "何か問題が起きました。"; // エラーメッセージがない場合の汎用的なテキスト
   }
   res.status(statusCode).render("error", { err });
 });
