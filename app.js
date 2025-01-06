@@ -106,7 +106,7 @@ app.use((err, req, res, next) => {
   res.status(statusCode).render("error", { err });
 });
 
-// サーバー立ち上げ
+// ポート3000でサーバー立ち上げ
 app.listen(3000, () => {
   console.log("ポート3000でリクスト待機中...");
 });
