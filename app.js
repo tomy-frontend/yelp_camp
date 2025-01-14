@@ -1,5 +1,5 @@
+// 開発環境用設定
 if (process.env.NODE_ENV !== "production") {
-  // Node.jsがもし本番用じゃない時はこの設定で動かす。
   require("dotenv").config();
 }
 
