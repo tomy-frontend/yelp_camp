@@ -13,7 +13,7 @@ imageSchema.virtual("thumbnail").get(function () {
 
 const opts = { toJSON: { virtuals: true } };
 
-// キャンプ場のスキーマ
+// キャンプ場のスキーマ作成
 const campgroundSchema = new Schema(
   {
     title: String,
