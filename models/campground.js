@@ -62,7 +62,7 @@ const deleteFunc = async function (doc) {
   }
 };
 
-// キャンプ場が削除されると、reviewも削除するミドルウェア
+// キャンプ場が削除されると、reviewも削除するミドルウェア、データリレーションのために必要
 campgroundSchema.post("findOneAndDelete", deleteFunc);
 
 module.exports = mongoose.model("Campground", campgroundSchema); // 別ファイルから使用できるようにexports
