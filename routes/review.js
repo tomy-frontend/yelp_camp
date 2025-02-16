@@ -5,7 +5,6 @@ const { validateReview, isLoggedIn, isReviewAuthor } = require("../middleware");
 const review = require("../controllers/reviews");
 
 // reviewの投稿追加のルーティング
-// + Joiでサーバーサイドのバリデーションチェック
 // + catchAsync関数 → 非同期処理でエラーがあったらエラーハンドリングミドルウェアに渡すミドルウェア
 router.post("/", isLoggedIn, validateReview, catchAsync(review.createReview));
 
@@ -14,7 +13,7 @@ router.delete(
   "/:reviewId",
   isLoggedIn,
   isReviewAuthor,
-  catchAsync(review.deleteReview)
+  catchAsync(review.deleteReview),
 );
 
 module.exports = router;
